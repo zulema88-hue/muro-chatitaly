@@ -56,7 +56,7 @@
   </div>
 
 <script>
-  // 🌟 QUI METTIAMO SOLO LE CHIAVI CORRETTE 🌟
+  // 🌟 Chiavi corrette del progetto 🌟
   const SUPABASE_URL = "https://wumwurwuwoysrvutupde.supabase.co";
   const SUPABASE_KEY = "sb_publishable_zfNgYH6O2O3zlnX9mhK4Fg_n-jU6QP1";
 
@@ -82,7 +82,13 @@
       y: random(20, window.innerHeight - 200)
     };
 
-    await supabase.from("muro").insert([data]);
+    const { error } = await supabase.from("muro").insert([data]);
+    if(error){
+      console.error("Errore invio:", error.message);
+      alert("Errore a scrivere sul muro. Controlla la RLS o la tabella!");
+      return;
+    }
+
     document.getElementById("testo").value = "";
     carica();
   }
@@ -90,7 +96,11 @@
   async function carica() {
     document.querySelectorAll(".graffito").forEach(e => e.remove());
 
-    const { data } = await supabase.from("muro").select("*");
+    const { data, error } = await supabase.from("muro").select("*");
+    if(error){
+      console.error("Errore caricamento:", error.message);
+      return;
+    }
 
     data.forEach(m => {
       const div = document.createElement("div");
